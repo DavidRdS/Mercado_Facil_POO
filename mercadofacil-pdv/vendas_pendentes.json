@@ -1,0 +1,25 @@
+[
+  {
+    "data": "2025-11-15T10:20:00",
+    "itens": [
+      {
+        "produto": {
+          "id": 1,
+          "nome": "Arroz 1kg",
+          "preco": 6.5,
+          "estoque": 100
+        },
+        "quantidade": 2
+      },
+      {
+        "produto": {
+          "id": 3,
+          "nome": "Cafe 500g",
+          "preco": 12.0,
+          "estoque": 50
+        },
+        "quantidade": 1
+      }
+    ]
+  }
+]
