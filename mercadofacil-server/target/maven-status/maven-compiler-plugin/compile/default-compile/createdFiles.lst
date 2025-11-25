@@ -1,9 +1,0 @@
-com\mercadofacil\controller\ProdutoController.class
-com\mercadofacil\model\Produto.class
-com\mercadofacil\model\Venda.class
-com\mercadofacil\model\ItemVenda.class
-com\mercadofacil\MercadoFacilApplication.class
-com\mercadofacil\repository\VendaRepository.class
-com\mercadofacil\service\VendaService.class
-com\mercadofacil\repository\ProdutoRepository.class
-com\mercadofacil\controller\VendaController.class
