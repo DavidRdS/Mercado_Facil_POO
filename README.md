@@ -1,85 +1,172 @@
-# Mercado Fácil POO: PDV e Servidor de Sincronização
+📦 Mercado Fácil — PDV + Servidor Node.js
+🔄 Arquitetura Offline-First com Sincronização JSON
 
-## 👥 1. Integrantes do Projeto
+👥 1. Integrante do Projeto
+David Roberto da Silva Sousa — Matrícula 01765638
 
-* **David Roberto da Silva Sousa - Matricula 01765638
-* 
+🛠️ 2. Como Executar o Servidor (mercadofacil-server - Node.js)
+O servidor funciona como uma API REST, responsável por produtos, vendas e sincronização entre PDV ↔ servidor.
+📌 Pré-requisitos
 
----
 
-## 🛠️ 2. Como Compilar e Executar o Servidor (`mercadofacil-server`)
+Node.js (versão 18 ou superior)
 
-O servidor é a camada de API e persistência (banco de dados).
 
-### Pré-requisitos
-* **Java Development Kit (JDK) 17** ou superior.
-* **Maven** (gerenciador de dependências).
+NPM (já vem com o Node)
 
-### Passos de Execução
 
-1.  **Navegar até a pasta do Servidor:**
-    ```bash
-    cd mercadofacil-server
-    ```
+Visual Studio Code
 
-2.  **Compilar o Projeto:**
-    Utilize o Maven para baixar as dependências e gerar o pacote `.jar` (ou `.war`):
-    ```bash
-    mvn clean install
-    ```
 
-3.  **Executar o Servidor:**
-    Execute o arquivo `.jar` gerado na pasta `target`:
-    ```bash
-    java -jar target/mercadofacil-server-1.0.0.jar
-    ```
-    O servidor será inicializado e estará acessível em `http://localhost:8080` (porta padrão do Spring Boot).
 
----
+▶️ Passo a Passo para Rodar o Servidor no VSCode
+1️⃣ Abra o projeto no VSCode
+mercadofacil-server/
+ ├── package.json
+ ├── server.js
+ ├── src/
+ └── ...
 
-## 🖥️ 3. Como Compilar e Executar o Cliente PDV (`mercadofacil-pdv`)
+2️⃣ Instale as dependências
+No terminal integrado (CTRL + `):
+npm install
 
-O cliente PDV (Ponto de Venda) é uma aplicação Java ou React (dependendo da sua estrutura) que opera de forma independente para garantir vendas ininterruptas.
+3️⃣ Inicie o servidor
+npm start
 
-**Atenção:** Se o projeto PDV for uma aplicação **Maven/Java**, use os mesmos pré-requisitos e passos de compilação/execução do servidor (ajustando o nome do arquivo JAR na execução).
+Ou, se quiser rodar em modo desenvolvedor:
+npm run dev
 
-* *Se o projeto PDV for React/JavaScript, ajuste os pré-requisitos (Node.js/NPM) e os comandos para `npm install` e `npm start`.*
+4️⃣ Acesse no navegador
+http://localhost:3000
 
-### Passos de Execução (Exemplo - Assumindo que é um projeto Java/Maven)
+📌 Estrutura mínima do servidor (Node.js + Express)
+Exemplo simples do arquivo server.js:
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+const app = express();
 
-1.  **Navegar até a pasta do Cliente:**
-    ```bash
-    cd mercadofacil-pdv
-    ```
+app.use(cors());
+app.use(express.json());
 
-2.  **Compilar o Projeto:**
-    ```bash
-    mvn clean install
-    ```
+// Carregar catálogo (produtos)
+app.get("/api/produtos", (req, res) => {
+    const produtos = JSON.parse(fs.readFileSync("./data/catalogo.json"));
+    res.json(produtos);
+});
 
-3.  **Executar o Cliente:**
-    Execute o arquivo `.jar` gerado na pasta `target`:
-    ```bash
-    java -jar target/mercadofacil-pdv-1.0.0.jar
-    ```
+// Receber vendas do PDV
+app.post("/api/sincronizar/vendas", (req, res) => {
+    const vendas = req.body;
 
----
+    fs.writeFileSync("./data/vendas_recebidas.json", JSON.stringify(vendas, null, 2));
 
-## 🌐 4. Arquitetura Offline-First
+    res.json({ status: "OK", recebidas: vendas.length });
+});
 
-O projeto Mercado Fácil utiliza uma arquitetura **Offline-First**, que prioriza a funcionalidade do cliente (PDV) mesmo na ausência de conexão com a internet.
+app.listen(3000, () => console.log("🚀 API MercadoFácil rodando em http://localhost:3000"));
 
-### JSON como Mecanismo de Sincronização
 
-A sincronização de dados ocorre em dois sentidos usando arquivos **JSON** locais:
+🖥️ 3. Como Executar o PDV (mercadofacil-pdv)
+📌 O PDV agora é um cliente Node.js também.
+Esse cliente funciona offline, lendo e salvando JSON localmente.
+▶️ Passos:
+1️⃣ Abra a pasta do PDV
+cd mercadofacil-pdv
 
-1.  **Sincronização de Entrada (Produto):**
-    * No início do dia ou sempre que a conexão estiver disponível, o PDV baixa a lista completa de produtos do servidor.
-    * Esses dados são armazenados localmente em um arquivo, como `catalogo.json`, garantindo que o PDV sempre tenha preços e estoque atualizados para consulta durante as vendas.
+2️⃣ Instale dependências
+npm install
 
-2.  **Sincronização de Saída (Venda):**
-    * Todas as vendas realizadas pelo PDV são inicialmente registradas localmente em um arquivo de pendências, como `vendas_pendentes.json`.
-    * Quando a conexão com a internet é restabelecida, um serviço de sincronização do PDV envia o conteúdo de `vendas_pendentes.json` para o servidor (API) em lote.
-    * Após a confirmação do servidor, o arquivo local de pendências é limpo.
+3️⃣ Execute o PDV
+npm start
 
-Essa abordagem garante que as operações de venda cruciais nunca sejam interrompidas por falhas de rede.
+
+🌐 4. Arquitetura Offline-First (Com JSON Local)
+O Mercado Fácil implementa uma arquitetura Offline-First, essencial para PDVs que precisam funcionar mesmo sem internet.
+
+🔄 Sincronização de Entrada (Produtos)
+
+
+O PDV chama:
+
+
+GET /api/produtos
+
+
+
+O servidor retorna catalogo.json
+
+
+O PDV salva localmente:
+
+
+data/catalogo_local.json
+
+✔️ Assim, consultas de preço e estoque funcionam mesmo offline.
+
+🔄 Sincronização de Saída (Vendas)
+
+
+PDV salva vendas localmente em:
+
+
+data/vendas_pendentes.json
+
+
+
+Quando a internet voltar:
+
+
+POST /api/sincronizar/vendas
+
+
+
+Servidor recebe e confirma.
+
+
+PDV apaga o arquivo local de pendências.
+
+
+✔️ Nenhuma venda é perdida se a conexão cair.
+
+🗂️ Estrutura de Pastas Recomendada
+Servidor Node.js
+mercadofacil-server/
+ ├── server.js
+ ├── data/
+ │    ├── catalogo.json
+ │    └── vendas_recebidas.json
+ ├── package.json
+ └── README.md
+
+PDV Node.js
+mercadofacil-pdv/
+ ├── app.js
+ ├── data/
+ │    ├── catalogo_local.json
+ │    └── vendas_pendentes.json
+ ├── package.json
+ └── README.md
+
+
+✔️ Se quiser, posso gerar TODA a estrutura do projeto para você:
+🔧 Opções:
+
+
+Gerar automaticamente os dois package.json
+
+
+Criar estrutura completa do servidor
+
+
+Criar o PDV completo
+
+
+Criar rotas de sincronização prontas
+
+
+Criar versão com banco SQLite ao invés de JSON
+
+
+👉 O que você deseja que eu gere agora?
