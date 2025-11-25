@@ -1,7 +1,0 @@
-com\mercadofacil\model\Produto.class
-com\mercadofacil\model\Venda.class
-com\mercadofacil\network\SyncService.class
-com\mercadofacil\model\ItemVenda.class
-com\mercadofacil\Main.class
-com\mercadofacil\network\SyncService$1.class
-com\mercadofacil\network\ApiClient.class
